@@ -1,3 +1,5 @@
+statements      : NEWLINE* expr (NEWLINE+ expr)* NEWLINE*
+
 expr            : KEYBOARD:var IDENIFIER EQ expr
                 : comp_expr ((KEYWORDS:AND|KEYWORDS:OR) comp_expr)
 
@@ -22,15 +24,28 @@ atom            : PLUS|MINUS|IDENIFIER
                 : while_expr
                 : func_expr
 
-if_expr         : KEYWORD:IF expr KEYWORD:THEN expr 
-                (KEYWORD:ELSEIF expr KEYWORD:THEN expr)*
-                (KEYWORD:ELSE expr)?
+if_expr         : KEYWORD:IF expr KEYWORD:THEN
+                (expr if_expr_b|if_expr_c?)
+                (NEWLINE statements KEYWORD:END|if_expr_b|if_expr_c)
+
+if_expr_b       : KEYWORD:ELSEIF
+                expr
+                (NEWLINE statements KEYWORD:END)            
+
+if_expr_c       : KEYWORD:ELSE expr KEYWORD:THEN
+                (expr if_expr_b|if_expr_c?)
+                (NEWLINE statements KEYWORD:END|if_expr_b|if_expr_c)        
 
 for_expr        : KEYBOARD:FOR IDENIFIER EQ expr KEYWORD:TO expr
-                (KEYWORD:STEP expr)? KEYWORD:THEN expr
+                (KEYWORD:STEP expr)? KEYWORD:THEN 
+                expr
+                (NEWLINE statements KEYWORD:END)  
 
-while_expr      : KEYWORD:WHILE expr KEYWORD:THEN expr
+while_expr      : KEYWORD:WHILE expr KEYWORD:THEN
+                expr
+                (NEWLINE statements KEYWORD:END) 
 
 func_def        : KEYWORD:FUNC IDENIFIER?
                 LPAREN (IDENIFIER (COMMA IDENIFIER)*)? RPAREN
                 ARROW expr
+                (NEWLINE statements KEYWORD:END) 
