@@ -1,0 +1,4 @@
+#Ignore system specific config
+
+/__pycache__/*
+/.gitattributes
